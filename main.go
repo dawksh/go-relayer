@@ -21,6 +21,13 @@ func main() {
 		os.Exit(1)
 	}
 
+	chainID, err := ethClient.ChainID(context.Background())
+	if err != nil {
+		fmt.Println("Failed to get chain ID:", err)
+		os.Exit(1)
+	}
+	fmt.Println("Connected to the Ethereum client with chain id:", chainID)
+
 	header := make(chan *types.Header)
 	sub, err := ethClient.SubscribeNewHead(context.Background(), header)
 
@@ -42,8 +49,8 @@ func main() {
 			}
 
 			for _, tx := range block.Transactions() {
-				if tx.To().Cmp(common.HexToAddress("0x28172273CC1E0395F3473EC6eD062B6fdFb15940")) == 0 {
-					fmt.Println("New transaction:", tx.Hash())
+				if to := tx.To(); to != nil && to.Cmp(common.HexToAddress("0x28172273CC1E0395F3473EC6eD062B6fdFb15940")) == 0 {
+					fmt.Println("New transaction:", common.Bytes2Hex(tx.Data()))
 				}
 			}
 		}
