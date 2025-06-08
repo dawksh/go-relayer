@@ -1,9 +1,16 @@
 package client
 
 import (
+	"os"
+
 	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/joho/godotenv"
 )
 
+func init() {
+	godotenv.Load()
+}
+
 func GetEthClient() (*ethclient.Client, error) {
-	return ethclient.Dial("https://boldest-damp-pond.base-mainnet.quiknode.pro/")
+	return ethclient.Dial(os.Getenv("BASE_RPC"))
 }
