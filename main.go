@@ -11,8 +11,6 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 )
 
-const contractABI = `[{"inputs":[],"name":"example","outputs":[],"stateMutability":"nonpayable","type":"function"}]`
-
 func main() {
 	fmt.Println(` ________   ________          ________   _______    ___        ________       ___    ___  _______    ________     
 |\   ____\ |\   __  \        |\   __  \ |\  ___ \  |\  \      |\   __  \     |\  \  /  /||\  ___ \  |\   __  \    
