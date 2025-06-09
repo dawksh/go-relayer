@@ -5,11 +5,14 @@ import (
 	"fmt"
 	"os"
 
+	"go-relayer/abi"
 	"go-relayer/client"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 )
+
+const contractABI = `[{"inputs":[],"name":"example","outputs":[],"stateMutability":"nonpayable","type":"function"}]`
 
 func main() {
 	fmt.Println(` ________   ________          ________   _______    ___        ________       ___    ___  _______    ________     
@@ -59,7 +62,12 @@ func main() {
 
 			for _, tx := range block.Transactions() {
 				if to := tx.To(); to != nil && to.Cmp(common.HexToAddress("0x28172273CC1E0395F3473EC6eD062B6fdFb15940")) == 0 {
-					fmt.Println("New transaction:", common.Bytes2Hex(tx.Data()))
+					decoded, err := abi.DecodeTransactionData(contractABI, "0x"+common.Bytes2Hex(tx.Data()))
+					if err != nil {
+						fmt.Println("Failed to decode transaction:", err)
+						continue
+					}
+					fmt.Println("Decoded transaction:", decoded)
 				}
 			}
 		}
