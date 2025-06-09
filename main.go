@@ -5,10 +5,9 @@ import (
 	"fmt"
 	"os"
 
-	"go-relayer/abi"
 	"go-relayer/client"
+	"go-relayer/utils"
 
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 )
 
@@ -28,6 +27,8 @@ func main() {
 
 	ethClient, err := client.GetEthClient()
 
+	logger := utils.GetLogger()
+
 	if err != nil {
 		fmt.Println("Failed to connect to the Ethereum client:", err)
 		os.Exit(1)
@@ -38,7 +39,7 @@ func main() {
 		fmt.Println("Failed to get chain ID:", err)
 		os.Exit(1)
 	}
-	fmt.Println("Connected to the Ethereum client with chain id:", chainID)
+	logger.Info("Connected to the Ethereum client with chain id:", chainID)
 
 	header := make(chan *types.Header)
 	sub, err := ethClient.SubscribeNewHead(context.Background(), header)
@@ -61,13 +62,8 @@ func main() {
 			}
 
 			for _, tx := range block.Transactions() {
-				if to := tx.To(); to != nil && to.Cmp(common.HexToAddress("0x28172273CC1E0395F3473EC6eD062B6fdFb15940")) == 0 {
-					decoded, err := abi.DecodeTransactionData(contractABI, "0x"+common.Bytes2Hex(tx.Data()))
-					if err != nil {
-						fmt.Println("Failed to decode transaction:", err)
-						continue
-					}
-					fmt.Println("Decoded transaction:", decoded)
+				if to := tx.To(); to != nil {
+					logger.Info(tx.Hash())
 				}
 			}
 		}
