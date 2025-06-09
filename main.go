@@ -49,6 +49,13 @@ func main() {
 		os.Exit(1)
 	}
 
+	queue := make(chan *types.Block, 100)
+	go func() {
+		for block := range queue {
+			go client.ProcessBlock(block)
+		}
+	}()
+
 	for {
 		select {
 		case err := <-sub.Err():
@@ -61,11 +68,7 @@ func main() {
 				continue
 			}
 
-			for _, tx := range block.Transactions() {
-				if to := tx.To(); to != nil {
-					logger.Info(tx.Hash())
-				}
-			}
+			queue <- block
 		}
 	}
 }
